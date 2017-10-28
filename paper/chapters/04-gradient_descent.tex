@@ -1,6 +1,5 @@
 \newpage
-\section{Gradient Descent}\label{ch:gradient_descent}
-
+\section{Gradient Descent}\label{ch:gradient_descent} 
 %explain batches
 
 %explain weights, that weights change after a batch props, not whole network
@@ -138,9 +137,11 @@ Thus $\nabla b = \sum_{i=1}^m P_i$.
 Now that we have computer $\nabla W$ and $\nabla b$, we can update $W$
 and $b$ by the following:
 
-$$ W = W - \eta \nabla W $$
-and
-$$ b = b - \eta \nabla b, $$
+\begin{align*}
+W &= W - \eta \nabla W,\\
+b &= b - \eta \nabla b, 
+\end{align*}
+
 where $\eta$ is a hyperparameter called the learning rate; it effectively
 scales how much parameters will follow the gradient. If $\eta$ is very small,
 then the network will take a long time to train, but if $\eta$ is too large,
@@ -166,6 +167,181 @@ is called the REctified Linear Unit (RELU) function, and is defined as follows:
    \end{cases}
 \]
 
-\subsubsection{Deriving $\nabla X$}
+By adding RELU to our architecture, we will create a one-layer neural network,
+which involves the following:
+\begin{enumerate}
+\item parameters $W^{(1)}$ and $B^{(1)}$
+\item parameters $W^{(2)}$ and $B^{(2)}$ \item a non-linear function (the
+$relu$ function in our case), denoted $\phi$, which maps $\mathbb{R}
+\longrightarrow \mathbb{R}$.
+\end{enumerate}
 
-\subsection{One Layer Neural Net}
+Our neural network now has more parameters, and so the prediction step is a
+little more complicated. Data gets mapped to predictions by the following
+process:
+\begin{enumerate}
+\item $A = XW^{(1)} + b^{(1)}$
+\item $Z = \phi(A)$
+\item $P + ZW^{(2)} + b^{(2)}$
+\end{enumerate}
+
+Once again, we must use a loss function to optimize our parameters. Let us use
+the Softmax Loss function as we did before. (Note: current research shows that
+other loss functions produce better results, but those functions tend to be
+more complicated -> are more computationally expensive to train. Everything is
+a tradeoff).
+
+We will need $\phi\prime$ to calculate our update formulas, but we note that
+$\phi$ is not differentable at $x=0$. In place of $\phi\prime(x)$, we will use
+$1(x == 0)$. (Note: why can we do this)
+
+\subsubsection{Deriving $\nabla W^{(2)}$ and $\nabla b^{(2)}$}
+Since the output layer, or last layer of our new architecture is identical to a
+Softmax classifier, just with $Z$ in place of $X$, we can define $\nabla
+W^{(2)}$ and $\nabla b^{(2)}$ as
+
+$$ \nabla W^{(2)}  = Z^T P. $$
+$$ \nabla b^{(2)}  = \sum_{i=1}^m P_i. $$
+
+\subsubsection{Deriving $\nabla X$}
+\begin{align*}
+  \frac{\partial L}{\partial X_{uv}}
+    =\sum_{i=1}^m \frac{\partial L_i}{X_{uv}}\\
+  &= \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{ij}}
+      \frac{\partial P_{ij}}{\partial X_{uv}}\\
+  &= \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{ij}}
+      1(i == u) W_{vj}\\
+  &= \sum_{j=1}^k \sum_{i=1}^m \frac{\partial L_i}{\partial P_{ij}}
+      1(i == u) W_{vj}\\
+  &= \sum_{j=1}^k \frac{\partial L_u}{\partial P_{uj}} W_{vj}\\
+  &= \sum_{j=1}^k \nabla P_{uj} W_{vj}\\
+  &= \left( \nabla P W^T \right) _{uv}.
+\end{align*}
+
+Defining $\nabla X_{ij} = \frac{\partial L}{\partial X_{ij}}$, we now have
+
+$$ \nabla X = \nabla P W^T. $$
+
+% rewrite, X can be replaced iwth Z?
+Deriving $\nabla Z$ would be done in exactly the same way. If we define
+$\nabla Z_{uv} = \frac{\partial L}{\partial Z_{uv}}$, we now have
+
+$$ \nabla Z = \nabla P W^{(2)}. $$
+
+\subsubsection{Deriving $\nabla A$, $\nabla W^{(1)}$, $\nabla b^{(1)}$}
+Recall that $Z = \phi(A).$
+
+In order to calculate $\nabla W^{(1)}$ and $\nabla b^{(1)}$, we will first
+calculate $\nabla A$. To do this, we will recall that $Z_{uv} = \phi(A_{uv})$
+and that $L_i$ is a function of $Z_{uv}$ only if $i == u$ for any $i, u, \in
+[0, m]$. We see that
+
+\begin{align*}
+  \frac{\partial L}{\partial A_{uv}}
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial A_{uv}}\\
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial Z_{uv}} \frac{\partial Z_{uv}}{\partial A_{uv}}
+  &= \frac{\partial L_u}{Z_{uv}} 1(A_{uv} > 0)
+  &= \frac{\partial L}{Z_{uv}} 1(A_{uv} > 0)
+  &= \nabla Z_{uv} 1(A_{uv} > 0).
+\end{align*}
+
+So we have
+$$ \nabla A = \nabla Z \dot (A > 0), $$
+
+where $a \dot b$ indicates the element-wise multiplication of matricies $a$ and $b$.
+
+We can define matricies $W^{(1)}$ and $b^{(1)}$ as we did with $W^{(2)}$ and
+$W^{(2)}$ earlier. Since these matricies have the same relationship with $A$ as
+$W$ and $b$ did with $P$ in the softmax classifier, we find that
+$$ \nabla W^{(1)} = X \nabla A, $$
+$$ \nabla b^{(1)} = \sum_{i=1}^m \nabla A_i.$$
+
+\subsubsection{Update formulas}
+Now that we have calculated the gradients for all of our parameters, we can
+define their update formulas as follows:
+
+\begin{align*}
+W^{(1)} &= W^{(1)} - \eta \nabla W^{(1)},\\
+b^{(1)} &= b^{(1)} - \eta \nabla b^{(1)},\\
+W^{(2)} &= W^{(2)} - \eta \nabla W^{(2)},\\
+b^{(2)} &= b^{(2)} - \eta \nabla b^{(2)}.
+\end{align*}
+
+\subsection{Arbitrary-Layer Neural Net}
+We will now dicuss a fully connected neural network with an arbitary number of
+hidden layers. Let $h$ be a non-negative integer that denotes the number of
+hidden layers in our network. We will have $h+1$ matricies $W^{(1)}, W^{(2)},
+..., W^{(h+1)}$ and vectors $b^{(1)}, b^{(2)}, ..., b^{(h+1)}$, as well as
+$h+2$ positive integers $t_0, t_1, ..., t_{h+1}$, which each represent the number
+of nodes in a given layer. As before, we have $k$ classes, $m$ training
+examples, and $n$ features for each training example. For any arbitrary layer
+$j$, the size of $W^{(j)}$ will be $t_{j-1} \times t_j$ and the size of
+$b^{(j)}$ will be $1 \times t_j$. Since $t_0$ represents the number of nodes in
+the input layer, it must be true that $t_0 = n$. Similarly, since $t_{h+1}$
+represents the number of nodes in the output layer, it must be true that
+$t_{h+1} = k$.
+
+There are three steps to updating parameters in this arbitrary-layer network:
+\begin{enumerate}
+\item forward propagation
+\item backward propagation
+\item update parameters
+\end{enumerate}
+
+Let us go into each of these steps in more detail.
+
+\subsubsection{Forward Propagation}
+For any layer $j$ in the network, we transform an input, denoted $Z^{(j-1)}$,
+of size $m \times t_{(j-1)}$ to an output, denoted $Z^{(j)}$, of size $m \times
+t_j$. This is done through the following steps:
+
+$$ A^{(j)} = Z^{(j-1)} W^{(j)} + b^{(j)}, $$
+$$ Z^{(j)} = \phi\left( A^{(j)} \right)$$.
+
+For the input layer, $Z^{(0)} = X$, since our training data must be the input
+for the first layer of the network. The output layer doesn't apply the
+nonlinearity $\phi$ as with the other hidden layers; instead we have
+$$ P = Z^{(h)} = W^{(h+1)} + b^{(h+1)}. $$
+
+
+\subsubsection{Backward Propagation}
+We can define matricies $\nabla W^{(j)}$ and $\nabla b^{(j)}$ exactly as
+before. The output layer of the neural network is identical to a softmax
+classifier, so the formulas for $\nabla P$, $\nabla W^{(h+1)}$, and $\nabla
+b^{(h+1)}$ will be identical to the ones in that section. Then, the matrix
+$\nabla Z^{(h)}$ will be back-propagated to the previous layer. Let us suppress
+the indices for simplicity. For each hidden layer, we recieve an input $Z_{in}$
+and have parameters $W$ and $b$. We compute $A$ by
+
+$$ A = Z_{in} W + b, $$
+
+similarly to the one-layer network above. We then output a matrix $Z_{out}$, given by
+
+$$ Z_{out} = \phi(A).$$
+
+During back-propagation, each layer will recieve a matrix $\nabla Z_{out}$ from
+the subsequent layer. We then compute
+
+$$ \nabla A = \nabla Z_{out} \dot (A > 0), $$
+
+as we did for the one-layer network. Recall that in this case, $a \dot b$
+symbolizes element-by-element multiplication of two matricies $a$ and $b$.
+Just as in the case for a single-layer network, we have
+
+$$ \nabla W = Z_{in} \nabla A, $$
+$$ \nabla b = \sum_{i=1}^m \nabla A_i. $$
+
+If we are not at the input layer, we would then backpropagate $\nabla Z_{out}$
+to the previous layer, where $\nabla Z_{out}$ is defined as
+
+$$ \nabla Z_{out} = \nabla A W. $$
+
+\subsubsection{Update Parameters}
+As before, we update our parameters with the following equations:
+
+\begin{align*}
+W^{(j)} &= W^{(j)} - \eta \nabla W^{(j)},\\
+b^{(j)} &= b^{(j)} - \eta \nabla b^{(j)}
+\end{align*}
+
+for each layer $j$ in the network.
