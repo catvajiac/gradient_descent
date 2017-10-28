@@ -1,0 +1,171 @@
+\newpage
+\section{Gradient Descent}\label{ch:gradient_descent}
+
+%explain batches
+
+%explain weights, that weights change after a batch props, not whole network
+
+\subsection{Linear Classification}
+
+Suppose our training data is represented by a matrix $X$ which has dimensions
+$m \times n$, meaning there are $m$ examples, each with $n$ features. Let us
+suppose that each piece of data in $X$ belongs to one of $k$ classes, and the
+labels corresponding to each example are stored in a matrix $y$ which has
+dimension $m \times k$, where each row of $y$ contains a one in the column
+corresponding to the class which that example corresponds to, and zeros
+everywhere else.
+
+Suppose that we have a matrix $W$ with dimension $n \times k$ and a vector $b$
+of dimension $k \times 1$. We can build a prediction matrix $P$ where
+
+\[
+P = XW + b.
+\]
+
+Note that we must broadcast $b$ to an $m \times k$ matrix to compute this sum.
+Each row of $P$ contains $k$ scores, which each represent how closely that
+training example matches each class. A prediction can be made by predicting the
+class which corresponds to the entry of the highest score. The accuracy of
+these predictions can be evaluated with respect to the class labels found in
+$y$.
+
+We will now discuss how to determine $W$ and $b$ given our training data $X$
+and its labels $y$. The goal of training a softmax classifier is to determine
+the optimal values for these parameters.
+
+\subsection{Loss Functions}
+
+Suppose we have a function $l$ which takes in one training example and its
+label data as input and returns some sort of loss for that training example.
+The function $L$, defined below, then aggregates the values of $l$ for each
+training example. We call this our loss function
+
+\[
+L(p, y) = \sum_{i=1}^m l(P_i, y_i),
+\]
+
+where $P_i$ denotes the $ith$ row of $P$ and $y_i$ denotes the $ith$ row of
+$y$.
+
+We will be looking at the Softmax Loss function, which is defined by
+
+\[
+L(P) = -\frac{1}{m} \sum_{i=1}^m \log \frac{\exp{P_{i, y_i}}}
+                                           {\sum_{j=1}^k \exp{P_{i, j}}}.
+\]
+
+Note that $P$ is dependent on $W$ and $b$, so this can be rewritten as
+
+\[
+L(P) = -\frac{1}{m} \sum_{i=1}^m \log
+        \frac{\exp{\left(XW\right)_{i, y_i} + b_{y_i}}}
+             {\sum_{j=1}^k \exp{\left(XW\right)_{i, j} + b_j}}.
+\]
+
+\subsection{Deriving Gradient Update}
+We will now work to minimize $L$ by applying gradient descent. The following
+will derive the gradient update formula for the Softmax Loss function.
+
+\subsubsection{Deriving $\nabla P$}
+We first will determine $\nabla P$ as a step in determining $\nabla W$ and
+$\nabla b$. Let us fix a pair of indices $u$, $v$ where $1 \leq u \leq n$ and
+$1 \leq v \leq k$. First, we will differentiate with respect to $P_{u, v}$.
+Let us fix an $i$ where $1 \leq i \leq m$.  Let $L_i = \frac{\exp{P_{i,
+y_i}}}{\sum_{j=1}^k \exp{P_{i, j}}}$.
+
+%Note that \frac{\partial L_u}{\partial P_{u, v} = 0 if $u \neq i$.
+
+Let us also define a matrix $Y$ of size $m \times k$ as $Y_{i, j} = 1(y_i =
+j)$. So we have $\frac{\partial L_i}{\partial P_{i,v}} = \sum_{i=1}^m
+\frac{\exp{P_{i,v}}}{\sum_{i=1}^k \exp{P_{i,j}}}$.
+
+This makes
+\begin{align*}
+  \frac{\partial L}{\partial P_{i,v}}
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial P_{i,v}}\\
+  &= -\frac{1}{m} Y_{i,v} + \frac{1}{m}
+  \frac{\exp{P_{i,v}}}{\sum_{j=1}^k \exp{P_{i,j}}}
+\end{align*}
+  
+since $Y_{i,j}$ only depends on $P_{i,w}$.
+
+Thus $\nabla P_{i,v} = \frac{\partial L}{\partial P_{i,v}} \forall i,v.$
+
+So we have $\partial P_{i,v} = \frac{1}{m} \left[ -Y +
+\frac{\exp{P}}{\sum_{i=1}^m \exp{P_i}} \right]$.
+
+\subsubsection{Deriving $\nabla W$}
+Now we will derive $\nabla W$ to use in the update step of training. Recall
+that $P = XW + b$, meaning $P_{i, j} = \sum_{t=1}^n X_{i, t}W_{t, j} + b_j $.
+Also remember that $L_i$ is a function of $P_{u, v}$ only if $u = i$, so it
+follows that $\nabla P_{i, j} = \frac{\partial L}{\partial P_{i, j}} =
+\frac{\partial L_i}{\partial P_{i, j}}$. The following goes through the
+derivation of $\frac{\partial L}{\partial W_{uv}}$.
+
+\begin{align*} 
+     \frac{\partial L}{\partial W_{u, v}} = 
+     \sum_{i=1}^m \frac{\partial L_i}{\partial W_{u, v}} &= 
+     \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{i, j}}
+       \frac{\partial P_{i, j}}{\partial W_{u, v}}\\
+     &= \sum_{i=1}^m \sum_{j=1}^k
+         \frac{\partial L_i}{\partial P_{i, j}} X_{i, u}\\
+     &= \sum_{i=1}^m \frac{\partial L_i}{\partial P_{i, v}} X_{i, u}\\
+     &= \sum_{i=1}^m \nabla P_{i, v} X_{i. u}\\
+     &= \left( X^T \nabla P \right)_{u, v}.
+\end{align*}
+
+Thus, we have
+$$ \nabla W = X^T \nabla P. $$
+
+\subsubsection{Deriving $\nabla b$}
+We will now derive $\nabla b$ to use in the update step of training. This is
+similar to the derivation for $\nabla W$.
+
+We know that $\frac{\partial P_{i,j}}{\partial b_u} = 1(j == u).$
+\begin{align*} 
+  \frac{\partial L}{\partial b_u} = 
+  \sum_{i=1}^m \frac{\partial L_i}{\partial b_u} &= 
+  \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{i, j}}
+  \frac{\partial P_{i, j}}{\partial b}\\
+  &= \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{i, j}} 1(j == u)\\
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial P_{i,u}} \\
+  &= \sum_{i=1}^m P_{i,u}.
+\end{align*}
+
+Thus $\nabla b = \sum_{i=1}^m P_i$.
+
+\subsection{Gradient Descent Update}
+Now that we have computer $\nabla W$ and $\nabla b$, we can update $W$
+and $b$ by the following:
+
+$$ W = W - \eta \nabla W $$
+and
+$$ b = b - \eta \nabla b, $$
+where $\eta$ is a hyperparameter called the learning rate; it effectively
+scales how much parameters will follow the gradient. If $\eta$ is very small,
+then the network will take a long time to train, but if $\eta$ is too large,
+the network will have trouble finding the optimal $W$ and $b$, which will cause
+the training and test accuracies to drop. There are methods for finding optimal
+values for $\eta$, but this topic goes beyond the scope of this paper.
+
+At this point, we have enough information to create a Softmax Classifier, which is a
+zero-layer neural net. (Note: recall that when we refer to the number of layers
+a neural net has, we refer to the number of hidden layers)
+
+\subsection{Classifying Non-Linear Data}
+The Softmax Classifier is good at classifying linearly separable data. However,
+many classification problems involve data that isn't linearly separable. In
+order to remedy this, we must add a non-linearity to our neural network
+architecture. There are many different ways in which this can be done, but the
+current most popular function used to provide non-linearities in neural network
+is called the REctified Linear Unit (RELU) function, and is defined as follows:
+
+\[ relu(x) = \begin{cases} 
+      0 & x\leq 0 \\
+      x & x > 0 
+   \end{cases}
+\]
+
+\subsubsection{Deriving $\nabla X$}
+
+\subsection{One Layer Neural Net}

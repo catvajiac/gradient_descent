@@ -1,0 +1,42 @@
+\newpage
+\section{Introduction}
+
+The goal of image classification is to determine the subject, or class, of an
+image. This is a more complex problem than one may think when first studying it
+due to the variation in images. Unlike other algorithms, neural networks have
+been successful in correctly classifying images.
+
+There are many different cases in which one can have an unideal image,
+including viewpoint variation, scale variation, deformation, occlusion,
+illumination conditions, and intra-class variation. These will be described in
+detail later on in this paper, but they all describe ways in which images of
+the same class can vary. For this reason, a complex algorithm is required to be
+able to solve image classification.
+
+Neural networks pose a solution to the problem of image classification because
+they are loosely motivated by the way a human brain learns. They can solve
+image classification using a data-driven approach, or by processing many
+examples of different classes of images. They have neurons, or units, that
+learn the features of a dataset. Those units then propagate information to
+other units. This allows the algorithm to learn from observational data.
+
+Neural networks have two phases; training and inference. In the training phase,
+they learn from a large dataset, and in inference, they apply that knowledge to
+new testing data that hasn't been seen before. There's a rich mathematical
+theory involved in designing a neural network, which will be described in
+detail in Chapter \ref{ch:gradient_descent}.
+
+% maybe it's extra, but I feel like it's important to mention?
+Despite advances in hardware that have now made it feasable to train neural
+networks, they are still extremely computationally expensive to train,
+sometimes taking weeks or months to do so. Current research is being conducted
+in order ot find ways to speed up neural networks by innovative technical
+companies, such as Google, Facebook, and AMD. While it is not the focus of this
+paper to discuss this topic, it's important to realize that new techniques are
+still being developed for neural networks, as this is a growing field.
+
+In Sections \ref{ch:image_classification} and \ref{ch:neural_networks}, we will
+discuss background for image classification and neural networks. In Section
+\ref{ch:gradient_descent}, gradient descent, the iterative algorithm that
+trains a neural network. will be discussed. In Section \ref{ch:python}, we will
+discuss the implementation of a fully-connected network in Python.

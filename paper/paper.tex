@@ -1,0 +1,81 @@
+\documentclass[11pt]{article}
+\usepackage{makeidx,graphics}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{subcaption}
+\usepackage{varioref}
+
+
+\usepackage[margin=1in]{geometry}
+
+\theoremstyle{plain} 
+\newtheorem{Thm}{Theorem}[section]
+\newtheorem{Cor}[Thm]{Corollary}
+\newtheorem{Lem}[Thm]{Lemma}
+\newtheorem{Prop}[Thm]{Proposition}
+\newtheorem*{Thm*}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{Def}[Thm]{Definition}
+\newtheorem{Rem}[Thm]{Remark}
+\newtheorem{Exa}[Thm]{Example}
+\newtheorem{xca}{ }[section]
+\newtheorem{Prc}{Procedure}[section]
+\newtheorem*{Def*}{Definition}
+\newtheoremstyle{Nmthm}% name
+  {3pt}           % Space above, empty = `usual value'
+  {3pt}           % Space below
+  {\itshape}      % Body font
+  {}              % Indent amount (empty = no indent, \parindent = para indent)
+  {\bfseries}     % Thm head font
+  {.}             % Punctuation after thm head
+  {.5em}          % Space after thm head: " " = normal interword space;
+                  % \newline = linebreak
+  {\thmnote{#3}}  % Thm head spec
+
+\theoremstyle{Nmthm}
+\newtheorem*{Nmthm}{} % all text will be supplied in the note
+
+
+
+\begin{document}
+
+% double spacing
+\setlength{\baselineskip}{22pt}
+
+% title page
+\title{Neural Networks}
+\author{Catalina Vajiac\\
+Advisor: Chris Wedrychowicz}
+
+\date{\today}
+\maketitle
+
+\newpage
+\tableofcontents
+
+\pagenumbering{arabic}
+
+% chapters
+\input{chapters/01-intro.tex}
+\input{chapters/02-image_classification.tex}
+\input{chapters/03-neural_networks.tex}
+\input{chapters/04-gradient_descent.tex}
+\input{chapters/05-python.tex}
+\input{chapters/06-other_features.tex}
+
+% bibliography
+\bibliographystyle{siam}
+\nocite{*}
+\newpage
+\bibliography{chapters/bibliography}
+
+%\appendix
+%\section{Definitions}
+\end{document}
