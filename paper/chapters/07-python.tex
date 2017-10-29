@@ -1,0 +1,63 @@
+\newpage
+\section{Implementation in Python}\label{ch:python}
+
+To implement all three neural network architectures, we will use a common
+programming paradigm called Object-Oriented Programming (OOP). OOP is driven by
+the concept of \textit{classes}, which contain data, commonly refered to as
+attributes, and functions, commonly refered to as methods. These methods and
+attributes are specific to that class, and \textit{objects} of that class type
+will inherently have these methods and attributes. For example, if we were
+trying to write code that would describe a robot, we could create a ``robot"
+class that had data such as {\ttfamily x\_position}, {\ttfamily y\_position},
+{\ttfamily battery\_life}, etc. Some methods of our robot could be {\ttfamily
+move}, {\ttfamily charge}, or {\ttfamily pick\_up\_object}. We will use this
+paradigm to implement neural networks: each classifier or network will be
+represented as its own class.
+
+Below, we will discuss the important attributes and methods necessary to
+implement each architecture, but this discussion will not be exhaustive. For a
+more complete picture, the source code for each impelentation can be viewed in
+the Appendix of this paper, or at
+\url{https://github.com/catvajiac/senior\_comp}.
+
+
+\subsection{Softmax Classifier}
+To implement Softmax Classifier, we create a class {\ttfamily SoftmaxClassifier}
+which has three methods; {\ttfamily train}, {\ttfamily train\_batch}, and
+{\ttfamily predict}. It also contains {\ttfamily W} and {\ttfamily b} parameters, as
+well as various hyperparameters.
+
+Within {\ttfamily train}, we split the data into batches to make it easier to
+process and call {\ttfamily train\_batch} on each of those batches. In
+{\ttfamily train\_batch}, we implement the equations derived in Chapter 4 to update
+W and b. The {\ttfamily predict} method takes in data and returns the
+classifier's predictions for each datapoint.
+
+\subsection{One-Layer Neural Network}
+To implement the one-layer network, we first start with a similar structure to
+the Softmax Classifier; we have a class {\ttfamily OneLayerNet} that contains
+{\ttfamily train}, {\ttfamily train\_batch}, and {\ttfamily predict} methods as before.
+The difference is that this class has attributes {\ttfamily W1}, {\ttfamily b1},
+{\ttfamily W2}, and {\ttfamily b2}, and uses the equations derived from Chapter 5 to
+update each of these parameters. The {\ttfamily predict} method is updated to use
+RELU.
+
+\subsection{Multi-Layer Neural Network}
+To implement the multi-layer network, we need a slightly different structure.
+We now will have three classes - a {\ttfamily NeuralNet} class, a
+{\ttfamily FullyConnectedLayer} class, and a {\ttfamily ReluLayer} class.
+
+todo: briefly explain "has-a" class inheritance.
+
+The {\ttfamily NeuralNet} class contains methods {\ttfamily add\_layer},
+{\ttfamily train}, {\ttfamily forward}, {\ttfamily backward}, and {\ttfamily predict}. The
+{\ttfamily add\_layer} method will append a new fully-connected or Relu layer to
+the network. The {\ttfamily forward} method calls {\ttfamily forward} on all layers
+of the neural network. Similarly, {\ttfamily backaward} back-propagates through all
+layers of the network. The {\ttfamily predict} method provides the same
+functionality as it did for the other implementations above.
+
+Each {\ttfamily NeuralNet} object contains {\ttfamily FullyConnectedLayer} and
+{\ttfamily ReluLayer} objects. These are both very similar to the previous
+implementations. In fact, a network with one {\ttfamily FullyConnectedLayer} is
+equivalent to a softmax classifier.

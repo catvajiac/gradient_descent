@@ -1,0 +1,154 @@
+\newpage
+\section{Gradient Descent}\label{ch:gradient_descent} 
+%explain batches
+
+%explain weights, that weights change after a batch props, not whole network
+
+\subsection{Linear Classification}
+
+Suppose our training data is represented by a matrix $X$ which has dimensions
+$m \times n$, meaning there are $m$ examples, each with $n$ features. Let us
+suppose that each piece of data in $X$ belongs to one of $k$ classes, and the
+labels corresponding to each example are stored in a matrix $y$ which has
+dimension $m \times k$, where each row of $y$ contains a one in the column
+corresponding to the class which that example corresponds to, and zeros
+everywhere else.
+
+Suppose that we have a matrix $W$ with dimension $n \times k$ and a vector $b$
+of dimension $k \times 1$. We can build a prediction matrix $P$ where
+
+\[
+P = XW + b.
+\]
+
+Note that we must broadcast $b$ to an $m \times k$ matrix to compute this sum.
+Each row of $P$ contains $k$ scores, which each represent how closely that
+training example matches each class. A prediction can be made by predicting the
+class which corresponds to the entry of the highest score. The accuracy of
+these predictions can be evaluated with respect to the class labels found in
+$y$.
+
+We will now discuss how to determine $W$ and $b$ given our training data $X$
+and its labels $y$. The goal of training a softmax classifier is to determine
+the optimal values for these parameters.
+
+\subsection{Loss Functions}
+
+Suppose we have a function $l$ which takes in one training example and its
+label data as input and returns some sort of loss for that training example.
+The function $L$, defined below, then aggregates the values of $l$ for each
+training example. We call this our loss function
+
+\[
+L(p, y) = \sum_{i=1}^m l(P_i, y_i),
+\]
+where $P_i$ denotes the $ith$ row of $P$ and $y_i$ denotes the $ith$ row of $y$.
+
+We will be looking at the Softmax Loss function, which is defined by
+
+\[
+L(P) = -\frac{1}{m} \sum_{i=1}^m \log \frac{\exp{P_{iy_i}}}
+                                           {\sum_{j=1}^k \exp{P_{ij}}}.
+\]
+
+Note that $P$ is dependent on $W$ and $b$, so this can be rewritten as
+
+\[
+L(P) = -\frac{1}{m} \sum_{i=1}^m \log
+        \frac{\exp{\left(XW\right)_{iy_i} + b_{y_i}}}
+             {\sum_{j=1}^k \exp{\left(XW\right)_{ij} + b_j}}.
+\]
+
+\subsection{Deriving Gradient Update}
+We will now work to minimize $L$ by applying gradient descent. The following
+will derive the gradient update formula for the Softmax Loss function.
+
+\subsubsection{Deriving $\nabla P$}
+We first will determine $\nabla P$ as a step in determining $\nabla W$ and
+$\nabla b$. Let us fix a pair of indices $u$, $v$ where $1 \leq u \leq n$ and
+$1 \leq v \leq k$. First, we will differentiate with respect to $P_{uv}$.
+Let us fix an $i$ where $1 \leq i \leq m$.  Let $L_i = \frac{\exp{P_{iy_i}}}
+{\sum_{j=1}^k \exp{P_{ij}}}$.
+
+%Note that \frac{\partial L_u}{\partial P_{u, v} = 0 if $u \neq i$.
+
+Let us also define a matrix $Y$ of size $m \times k$ as $Y_{ij} = 1(y_i ==
+j)$. So we have 
+
+$$\frac{\partial L_i}{\partial P_{iv}} = \sum_{i=1}^m
+\frac{\exp{P_{iv}}}{\sum_{i=1}^k \exp{P_{ij}}}.$$
+
+This makes
+\begin{align*}
+  \frac{\partial L}{\partial P_{iv}}
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial P_{iv}}\\
+  &= -\frac{1}{m} Y_{iv} + \frac{1}{m}
+  \frac{\exp{P_{iv}}}{\sum_{j=1}^k \exp{P_{ij}}}.
+\end{align*}
+  
+since $Y_{ij}$ only depends on $P_{iw}$.
+
+Thus $\nabla P_{iv} = \frac{\partial L}{\partial P_{iv}} \forall i,v.$
+
+So we have $\partial P_{iv} = \frac{1}{m} \left[ -Y +
+\frac{\exp{P}}{\sum_{i=1}^m \exp{P_i}} \right]$.
+
+\subsubsection{Deriving $\nabla W$}
+Now we will derive $\nabla W$ to use in the update step of training. Recall
+that $P = XW + b$, meaning $P_{ij} = \sum_{t=1}^n X_{it}W_{tj} + b_j $.
+Also remember that $L_i$ is a function of $P_{uv}$ only if $u == i$, so it
+follows that $\nabla P_{ij} = \frac{\partial L}{\partial P_{ij}} =
+\frac{\partial L_i}{\partial P_{ij}}$. The following goes through the
+derivation of $\frac{\partial L}{\partial W_{uv}}$.
+
+\begin{align*} 
+     \frac{\partial L}{\partial W_{uv}} = 
+     \sum_{i=1}^m \frac{\partial L_i}{\partial W_{uv}} &= 
+     \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{ij}}
+       \frac{\partial P_{ij}}{\partial W_{uv}}\\
+     &= \sum_{i=1}^m \sum_{j=1}^k
+         \frac{\partial L_i}{\partial P_{ij}} X_{iu}\\
+     &= \sum_{i=1}^m \frac{\partial L_i}{\partial P_{iv}} X_{iu}\\
+     &= \sum_{i=1}^m \nabla P_{iv} X_{iu}\\
+     &= \left( X^T \nabla P \right)_{uv}.
+\end{align*}
+
+Thus, we have
+$$ \nabla W = X^T \nabla P. $$
+
+\subsubsection{Deriving $\nabla b$}
+We will now derive $\nabla b$ to use in the update step of training. This is
+similar to the derivation for $\nabla W$.
+
+We know that $\frac{\partial P_{ij}}{\partial b_u} = 1(j == u).$
+\begin{align*} 
+  \frac{\partial L}{\partial b_u} = 
+  \sum_{i=1}^m \frac{\partial L_i}{\partial b_u} &= 
+  \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{i, j}}
+  \frac{\partial P_{ij}}{\partial b}\\
+  &= \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{ij}} 1(j == u)\\
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial P_{iu}} \\
+  &= \sum_{i=1}^m P_{iu}.
+\end{align*}
+
+Thus $\nabla b = \sum_{i=1}^m P_i$.
+
+\subsection{Gradient Descent Update}
+Now that we have computer $\nabla W$ and $\nabla b$, we can update $W$
+and $b$ by the following:
+
+\begin{align*}
+W &= W - \eta \nabla W,\\
+b &= b - \eta \nabla b, 
+\end{align*}
+
+where $\eta$ is a hyperparameter called the learning rate; it effectively
+scales how much parameters will follow the gradient. If $\eta$ is very small,
+then the network will take a long time to train, but if $\eta$ is too large,
+the network will have trouble finding the optimal $W$ and $b$, which will cause
+the training and test accuracies to drop. There are methods for finding optimal
+values for $\eta$, but this topic goes beyond the scope of this paper.
+
+At this point, we have enough information to create a Softmax Classifier, which is a
+zero-layer neural net. (Note: recall that when we refer to the number of layers
+a neural net has, we refer to the number of hidden layers)

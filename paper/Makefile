@@ -1,10 +1,10 @@
 FILE=paper
 
 all:
-	@pdflatex $(FILE).tex
+	@pdflatex -shell-escape $(FILE).tex
 	@bibtex $(FILE).aux
-	@pdflatex $(FILE).tex
-	@pdflatex $(FILE).tex
+	@pdflatex -shell-escape $(FILE).tex
+	@pdflatex -shell-escape $(FILE).tex
 
 clean:
 	@echo "cleaning up..."

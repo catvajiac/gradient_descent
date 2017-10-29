@@ -1,0 +1,79 @@
+\newpage
+\section{Arbitrary-Layer Neural Net}
+We will now dicuss a fully connected neural network with an arbitary number of
+hidden layers. Let $h$ be a non-negative integer that denotes the number of
+hidden layers in our network. We will have $h+1$ matricies $W^{(1)}, W^{(2)},
+..., W^{(h+1)}$ and vectors $b^{(1)}, b^{(2)}, ..., b^{(h+1)}$, as well as
+$h+2$ positive integers $t_0, t_1, ..., t_{h+1}$, which each represent the number
+of nodes in a given layer. As before, we have $k$ classes, $m$ training
+examples, and $n$ features for each training example. For any arbitrary layer
+$j$, the size of $W^{(j)}$ will be $t_{j-1} \times t_j$ and the size of
+$b^{(j)}$ will be $1 \times t_j$. Since $t_0$ represents the number of nodes in
+the input layer, it must be true that $t_0 = n$. Similarly, since $t_{h+1}$
+represents the number of nodes in the output layer, it must be true that
+$t_{h+1} = k$.
+
+There are three steps to updating parameters in this arbitrary-layer network:
+\begin{enumerate}
+\item forward propagation
+\item backward propagation
+\item update parameters
+\end{enumerate}
+
+Let us go into each of these steps in more detail.
+
+\subsubsection{Forward Propagation}
+For any layer $j$ in the network, we transform an input, denoted $Z^{(j-1)}$,
+of size $m \times t_{(j-1)}$ to an output, denoted $Z^{(j)}$, of size $m \times
+t_j$. This is done through the following steps:
+
+$$ A^{(j)} = Z^{(j-1)} W^{(j)} + b^{(j)}, $$
+$$ Z^{(j)} = \phi ( A^{(j)} )$$.
+
+For the input layer, $Z^{(0)} = X$, since our training data must be the input
+for the first layer of the network. The output layer doesn't apply the
+nonlinearity $\phi$ as with the other hidden layers; instead we have
+$$ P = Z^{(h)} = W^{(h+1)} + b^{(h+1)}. $$
+
+
+\subsubsection{Backward Propagation}
+We can define matricies $\nabla W^{(j)}$ and $\nabla b^{(j)}$ exactly as
+before. The output layer of the neural network is identical to a softmax
+classifier, so the formulas for $\nabla P$, $\nabla W^{(h+1)}$, and $\nabla
+b^{(h+1)}$ will be identical to the ones in that section. Then, the matrix
+$\nabla Z^{(h)}$ will be back-propagated to the previous layer. Let us suppress
+the indices for simplicity. For each hidden layer, we recieve an input $Z_{in}$
+and have parameters $W$ and $b$. We compute $A$ by
+
+$$ A = Z_{in} W + b, $$
+
+similarly to the one-layer network above. We then output a matrix $Z_{out}$, given by
+
+$$ Z_{out} = \phi(A).$$
+
+During back-propagation, each layer will recieve a matrix $\nabla Z_{out}$ from
+the subsequent layer. We then compute
+
+$$ \nabla A = \nabla Z_{out} \circ (A > 0), $$
+
+as we did for the one-layer network. Recall that $a \circ b$ symbolizes
+element-by-element multiplication of two matricies $a$ and $b$.  Just as in the
+case for a single-layer network, we have
+
+$$ \nabla W = Z_{in} \nabla A, $$
+$$ \nabla b = \sum_{i=1}^m \nabla A_i. $$
+
+If we are not at the input layer, we would then backpropagate $\nabla Z_{out}$
+to the previous layer, where $\nabla Z_{out}$ is defined as
+
+$$ \nabla Z_{out} = \nabla A W. $$
+
+\subsubsection{Update Parameters}
+As before, we update our parameters with the following equations:
+
+\begin{align*}
+W^{(j)} &= W^{(j)} - \eta \nabla W^{(j)},\\
+b^{(j)} &= b^{(j)} - \eta \nabla b^{(j)}
+\end{align*}
+
+for each layer $j$ in the network.
