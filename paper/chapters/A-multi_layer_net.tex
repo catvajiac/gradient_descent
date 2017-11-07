@@ -5,7 +5,8 @@ import load_mnist as lm
 import numpy as np
 
 class NeuralNet(object):
-  def __init__(self, batch_size = 128, epsilon = .01, learning_rate = .01, num_iterations = 20):
+  def __init__(self, batch_size = 128, epsilon = .01, learning_rate = .01,
+    num_iterations = 20):
     ''' initialize neural net, set params
         batch_size      -- number of training data to process at a time
         epsilon         -- scales multiply initial guess
@@ -64,7 +65,8 @@ class NeuralNet(object):
         indices = range(batch, min(batch + self.batch_size, X.shape[0]))
         self.get_top_layer_backprop(indices, y_batch)
         self.backward()
-        prediction = float((self.predict(X_batch).astype(int) == y_batch).sum())/len(X_batch)
+        prediction = float((self.predict(X_batch).astype(int) == y_batch).sum())
+          /len(X_batch)
       print "iteration {}: accuracy {:.4}".format(iteration, prediction)
  
   def forward(self):
@@ -104,7 +106,8 @@ class NeuralNet(object):
     return np.argmax(self.predictions, axis=1)
 
 class FullyConnectedLayer(object):
-  def __init__(self, master, input_size, output_size, epsilon, learning_rate, prev = None):
+  def __init__(self, master, input_size, output_size, epsilon, learning_rate,
+    prev = None):
     ''' initialize layer and set parameters
         master          -- parent NeuralNet class
         input_size      -- number of input nodes

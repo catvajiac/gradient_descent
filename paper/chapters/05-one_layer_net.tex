@@ -1,11 +1,13 @@
 \newpage
 \section{Classifying Non-Linear Data}
-The Softmax Classifier is good at classifying linearly separable data. However,
-many classification problems involve data that isn't linearly separable. In
-order to remedy this, we must add a non-linearity to our neural network
-architecture. There are many different ways in which this can be done, but the
-current most popular function used to provide non-linearities in neural network
-is called the REctified Linear Unit (RELU) function, and is defined as follows:
+The Softmax Classifier is good at classifying linearly separable data.
+(\textbf{TODO}: explain and give example)
+However, many classification problems involve data that isn't linearly
+separable. In order to classify nonlinear data, we must add a nonlinearity to
+our neural network architecture. There are many different ways in which this
+can be done, but the current most popular function used to provide
+nonlinearities in neural networks is called the REctified Linear Unit (RELU)
+function, and is defined as follows:
 
 \[ relu(x) = \begin{cases} 
       0 & x\leq 0 \\
@@ -13,22 +15,23 @@ is called the REctified Linear Unit (RELU) function, and is defined as follows:
    \end{cases}
 \]
 
-By adding RELU to our architecture, we will create a one-layer neural network,
-which involves the following:
+By propagating our data through RELU on top of the softmax classifier, we will
+create a one-layer neural network, which has the following different
+parameters:
 \begin{enumerate}
 \item parameters $W^{(1)}$ and $B^{(1)}$
 \item parameters $W^{(2)}$ and $B^{(2)}$ \item a non-linear function (the
-$relu$ function in our case), denoted $\phi$, which maps $\mathbb{R}
-\longrightarrow \mathbb{R}$.
+$relu$ function in our case), denoted $\phi$, which maps $\mathbb{R}^N
+\longrightarrow \mathbb{R}^N$.
 \end{enumerate}
 
 Our neural network now has more parameters, and so the prediction step is a
 little more complicated. Data gets mapped to predictions by the following
 process:
 \begin{enumerate}
-\item $A = XW^{(1)} + b^{(1)}$
-\item $Z = \phi(A)$
-\item $P + ZW^{(2)} + b^{(2)}$
+\item $A = XW^{(1)} + b^{(1)}$,
+\item $Z = \phi(A)$,
+\item $P + ZW^{(2)} + b^{(2)}$.
 \end{enumerate}
 
 Once again, we must use a loss function to optimize our parameters. Let us use
@@ -37,16 +40,16 @@ other loss functions produce better results, but those functions tend to be
 more complicated and are more computationally expensive to train. Everything is
 a tradeoff).
 
-We will need $\phi\prime$ to calculate our update formulas, but we note that
-$\phi$ is not differentable at $x=0$. In place of $\phi\prime(x)$, we will use
+We will need $\phi'$ to calculate our update formulas, but we note that
+$\phi$ is not differentable at $x=0$. In place of $\phi'(x)$, we will use
 $1(x == 0)$. (Note: why can we do this)
 
 \subsubsection{Deriving $\nabla W^{(2)}$ and $\nabla b^{(2)}$}
 Since the output layer, or last layer of our new architecture is identical to a
-Softmax classifier, just with $Z$ in place of $X$, we can define $\nabla
+Softmax classifier, just with $Z$ in place of $X$, we define $\nabla
 W^{(2)}$ and $\nabla b^{(2)}$ as
 
-$$ \nabla W^{(2)}  = Z^T P. $$
+$$ \nabla W^{(2)}  = Z^T P, $$
 $$ \nabla b^{(2)}  = \sum_{i=1}^m P_i. $$
 
 \subsubsection{Deriving $\nabla X$}
@@ -78,27 +81,28 @@ $$ \nabla Z = \nabla P W^{(2)}. $$
 Recall that $Z = \phi(A).$
 
 In order to calculate $\nabla W^{(1)}$ and $\nabla b^{(1)}$, we will first
-calculate $\nabla A$. To do this, we will recall that $Z_{uv} = \phi(A_{uv})$
+calculate $\nabla A$. To do this, recall that $Z_{uv} = \phi(A_{uv})$
 and that $L_i$ is a function of $Z_{uv}$ only if $i == u$ for any $i, u, \in
 [0, m]$. We see that
 
 \begin{align*}
   \frac{\partial L}{\partial A_{uv}}
   &= \sum_{i=1}^m \frac{\partial L_i}{\partial A_{uv}}\\
-  &= \sum_{i=1}^m \frac{\partial L_i}{\partial Z_{uv}} \frac{\partial Z_{uv}}{\partial A_{uv}}
-  &= \frac{\partial L_u}{Z_{uv}} 1(A_{uv} > 0)
-  &= \frac{\partial L}{Z_{uv}} 1(A_{uv} > 0)
+  &= \sum_{i=1}^m \frac{\partial L_i}{\partial Z_{uv}} \frac{\partial
+  Z_{uv}}{\partial A_{uv}}\\
+  &= \frac{\partial L_u}{Z_{uv}} 1(A_{uv} > 0)\\
+  &= \frac{\partial L}{Z_{uv}} 1(A_{uv} > 0)\\
   &= \nabla Z_{uv} 1(A_{uv} > 0).
 \end{align*}
 
 So we have
-$$ \nabla A = \nabla Z \circ (A > 0), $$
+$$ \nabla A = \nabla Z \bullet (A > 0), $$
 
-where $a \circ b$ indicates the element-wise multiplication of matricies $a$ and $b$.
+where $a \bullet b$ indicates the element-wise multiplication of matricies $a$ and $b$.
 
 We can define matricies $W^{(1)}$ and $b^{(1)}$ as we did with $W^{(2)}$ and
 $W^{(2)}$ earlier. Since these matricies have the same relationship with $A$ as
-$W$ and $b$ did with $P$ in the softmax classifier, we find that
+$W$ and $b$ did with $P$ in the softmax classifier, we get
 $$ \nabla W^{(1)} = X \nabla A, $$
 $$ \nabla b^{(1)} = \sum_{i=1}^m \nabla A_i.$$
 

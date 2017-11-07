@@ -10,26 +10,32 @@ Suppose our training data is represented by a matrix $X$ which has dimensions
 $m \times n$, meaning there are $m$ examples, each with $n$ features. Let us
 suppose that each piece of data in $X$ belongs to one of $k$ classes, and the
 labels corresponding to each example are stored in a matrix $y$ which has
-dimension $m \times k$, where each row of $y$ contains a one in the column
-corresponding to the class which that example corresponds to, and zeros
+dimension $m \times k$, where each row of $y$ contains a \textbf{1} in the column
+corresponding to the class which that example corresponds to, and a \textbf{0}
 everywhere else.
 
 Suppose that we have a matrix $W$ with dimension $n \times k$ and a vector $b$
-of dimension $k \times 1$. We can build a prediction matrix $P$ where
+of dimension $k \times 1$ which are both parameters of our neural network. We
+can build a prediction matrix $P$ where
 
 \[
 P = XW + b.
 \]
 
-Note that we must broadcast $b$ to an $m \times k$ matrix to compute this sum.
-Each row of $P$ contains $k$ scores, which each represent how closely that
-training example matches each class. A prediction can be made by predicting the
+Note that $X \times W$ is of size $m \times k$ and $b$ is of size $1 \times k$.
+In order to add a matrix and a vector together, we need to use a technique
+called broadcasting, where we turn $b$ into an $m \times k$ matrix where each
+row of this new matrix corresponds to $b$. This makes $X \times W$ and $b$ the
+same size so that they can be added to create $P$.
+
+Each row of $P$ contains $k$ scores that represent how closely that
+training example matches each class. A prediction can be made by finding the
 class which corresponds to the entry of the highest score. The accuracy of
 these predictions can be evaluated with respect to the class labels found in
 $y$.
 
 We will now discuss how to determine $W$ and $b$ given our training data $X$
-and its labels $y$. The goal of training a softmax classifier is to determine
+and its labels $y$. The goal of training a linear classifier is to determine
 the optimal values for these parameters.
 
 \subsection{Loss Functions}
@@ -42,16 +48,18 @@ training example. We call this our loss function
 \[
 L(p, y) = \sum_{i=1}^m l(P_i, y_i),
 \]
-where $P_i$ denotes the $ith$ row of $P$ and $y_i$ denotes the $ith$ row of $y$.
+where $P_i$ denotes the $i^{th}$ row of $P$ and $y_i$ denotes the $i^{th}$ row
+of $y$.
 
-We will be looking at the Softmax Loss function, which is defined by
+We will be using a specific loss function called the Softmax Loss function,
+which is defined by
 
 \[
 L(P) = -\frac{1}{m} \sum_{i=1}^m \log \frac{\exp{P_{iy_i}}}
                                            {\sum_{j=1}^k \exp{P_{ij}}}.
 \]
 
-Note that $P$ is dependent on $W$ and $b$, so this can be rewritten as
+By substituting $P = XW + b$, we get
 
 \[
 L(P) = -\frac{1}{m} \sum_{i=1}^m \log
@@ -60,8 +68,12 @@ L(P) = -\frac{1}{m} \sum_{i=1}^m \log
 \]
 
 \subsection{Deriving Gradient Update}
-We will now work to minimize $L$ by applying gradient descent. The following
-will derive the gradient update formula for the Softmax Loss function.
+To make successful predictions, we want to minimize our loss function $L$. We
+will do this using the gradient descent algorithm, which is an iterative
+algorithm that updates the parameters of our linear classifier. Gradient
+descent does this by finding the derivates of $L$ with respect to each
+parameter, and updating the parameters using that information. We will now
+derive the gradient update formula for the Softmax Loss function.
 
 \subsubsection{Deriving $\nabla P$}
 We first will determine $\nabla P$ as a step in determining $\nabla W$ and
@@ -88,7 +100,7 @@ This makes
   
 since $Y_{ij}$ only depends on $P_{iw}$.
 
-Thus $\nabla P_{iv} = \frac{\partial L}{\partial P_{iv}} \forall i,v.$
+Thus $\nabla P_{iv} = \frac{\partial L}{\partial P_{iv}} ~~\forall i,v.$
 
 So we have $\partial P_{iv} = \frac{1}{m} \left[ -Y +
 \frac{\exp{P}}{\sum_{i=1}^m \exp{P_i}} \right]$.
@@ -134,7 +146,7 @@ We know that $\frac{\partial P_{ij}}{\partial b_u} = 1(j == u).$
 Thus $\nabla b = \sum_{i=1}^m P_i$.
 
 \subsection{Gradient Descent Update}
-Now that we have computer $\nabla W$ and $\nabla b$, we can update $W$
+Now that we have computed $\nabla W$ and $\nabla b$, we can update $W$
 and $b$ by the following:
 
 \begin{align*}
@@ -147,8 +159,9 @@ scales how much parameters will follow the gradient. If $\eta$ is very small,
 then the network will take a long time to train, but if $\eta$ is too large,
 the network will have trouble finding the optimal $W$ and $b$, which will cause
 the training and test accuracies to drop. There are methods for finding optimal
-values for $\eta$, but this topic goes beyond the scope of this paper.
+values for $\eta$ and other hyperparameters, but this topic goes beyond the
+scope of this paper.
 
-At this point, we have enough information to create a Softmax Classifier, which is a
-zero-layer neural net. (Note: recall that when we refer to the number of layers
-a neural net has, we refer to the number of hidden layers)
+At this point, we have enough information to create a Softmax Classifier, which
+is a zero-layer neural net. Recall that when we refer to the
+number of layers a neural net has, we refer to the number of hidden layers.

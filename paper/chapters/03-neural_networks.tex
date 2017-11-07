@@ -1,10 +1,10 @@
 \newpage
 \section{Neural Network Architectures}\label{ch:neural_networks}
-There are a few different types of neural network architectures, some of which
-are described below. Some of these architectures are simpler to implement in
-practice than others, and some lend themselves better to certain types of
-problems. Remember that image classification is not the only problem that
-neural networks are able to solve.
+There are a many different types of neural network architectures. We will talk
+about fully-connected, deep, and convolutional neural networks. Some of these
+architectures are simpler to implement in practice than others and lend
+themselves better to certain types of problems. Remember that image
+classification is not the only problem that neural networks are able to solve.
 
 \subsection{Fully-Connected Neural Network}
 A fully-connected neural network is a network where all units in one layer are
@@ -39,16 +39,18 @@ We will go into the theory explaining what information each layer of the
 network is propogating and explain why multiple layers can achieve better
 performance in Chapter \ref{ch:gradient_descent}, but for now, we note that
 with multiple hidden layers, information about the images will be learned more
-accurately for each iteration of the Gradient Descent algorithm.
+accurately for each iteration of the Gradient Descent algorithm, which is the
+algorithm on which a neural network trains. We will discuss this algorithm in
+detail later.
 
 \subsection{Convolutional Neural Network}
 A convolutional neural network (CNN) is a network where not all units in one
-layer are connected to all units in the next. This is useful because not all
-pixels in an image give useful information about every part of the object they
-are trying to classify. Convolutional neural networks try to avoid unnecessary
-computation by removing interactions between units that don't provide useful
-information between each other. A visualization of the structure of a
-convolutional neural network is shown in Figure \ref{fig:cnn} below.
+layer are connected to all units in the next. Not all pixels in an image give
+useful information about every part of the object they are trying to classify,
+so CNNs are commonly used for image classification. They try to avoid
+unnecessary computation by removing interactions between units that aren't
+providing useful information to each other. A visualization of the structure
+of a convolutional neural network is shown in Figure \ref{fig:cnn} below.
 \newpage
 \begin{figure}[ht!]
 \centering

@@ -6,8 +6,10 @@
 \usepackage{amssymb}
 \usepackage{array}
 \usepackage{amsthm}
+\usepackage{courier}
 \usepackage{graphicx}
 \usepackage{epstopdf}
+\usepackage{minted}
 \usepackage{subcaption}
 \usepackage{varioref}
 
@@ -66,9 +68,19 @@ Advisor: Chris Wedrychowicz}
 \input{chapters/01-intro.tex}
 \input{chapters/02-image_classification.tex}
 \input{chapters/03-neural_networks.tex}
-\input{chapters/04-gradient_descent.tex}
-\input{chapters/05-python.tex}
-\input{chapters/06-other_features.tex}
+\input{chapters/04-softmax_classifier.tex}
+\input{chapters/05-one_layer_net.tex}
+\input{chapters/06-multi_layer_net.tex}
+\input{chapters/07-python.tex}
+%\input{chapters/08-other_features.tex}
+\input{chapters/09-conclusion.tex}
+
+% appendix
+\appendix
+\input{chapters/A-softmax_classifier.tex}
+\input{chapters/A-one_layer_net.tex}
+\input{chapters/A-multi_layer_net.tex}
+%\section{Definitions}
 
 % bibliography
 \bibliographystyle{siam}
@@ -76,6 +88,4 @@ Advisor: Chris Wedrychowicz}
 \newpage
 \bibliography{chapters/bibliography}
 
-%\appendix
-%\section{Definitions}
 \end{document}
