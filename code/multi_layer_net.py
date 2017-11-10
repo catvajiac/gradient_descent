@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 import load_mnist as lm
+import load_cifar10 as c10
 import numpy as np
 
 class NeuralNet(object):
@@ -91,7 +92,8 @@ class NeuralNet(object):
     Y = self.class_indicator_matrix[indices]
     P = self.predictions
     E = np.exp(P)
-    D = E / (E.sum(axis=1).reshape((len(indices), 1))) # sum over rows, shape
+    # sum over rows
+    D = E / (E.sum(axis=1).reshape((len(indices), 1)))
     gradient_P = (-Y + D) / len(indices)
     top_layer.backpropagated_input = gradient_P
 
@@ -218,6 +220,7 @@ ytest = (Xtest[:,1] > 0).astype(int)
 
 # test mnist
 mnist_train, mnist_labels, mnist_test, mnist_test_labels = lm.load_mnist()
+cifar_train, cifar_labels, cifar_test, cifar_test_labels = c10.load_cifar10()
 
 def train_and_test(learning_rate = .0001, batch_size = 128, num_iterations = 50, epsilon = .01):
     clf_mnist = NeuralNet(learning_rate = learning_rate, batch_size =
@@ -230,5 +233,18 @@ def train_and_test(learning_rate = .0001, batch_size = 128, num_iterations = 50,
     results = (predictions == mnist_test_labels)
     print results.sum()
 
+def train_and_test_c(learning_rate = .0001, batch_size = 128, num_iterations = 50, epsilon = .01):
+    clf_cifar = NeuralNet(learning_rate = learning_rate, batch_size =
+    batch_size, num_iterations = num_iterations)
+    clf_cifar.add_layer(FullyConnectedLayer, input_size = 784, output_size = 2000)
+    clf_cifar.add_layer(ReluLayer)  
+    clf_cifar.add_layer(FullyConnectedLayer, input_size = 2000, output_size = 10)
+    clf_cifar.train(cifar_train, cifar_labels)
+    predictions = clf_cifar.predict(cifar_test)
+    results = (predictions == cifar_test_labels)
+    print results.sum()
+
+
 if __name__ == "__main__":
   train_and_test()
+  train_and_test_c()

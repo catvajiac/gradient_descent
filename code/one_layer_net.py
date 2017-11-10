@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 import load_mnist as lm
+import load_cifar10 as c10
 import numpy as np
 
 class OneLayerNet(object):
@@ -90,10 +91,11 @@ class OneLayerNet(object):
 
 
 # testing functions
-def train(x_data, y_labels, num_classes, learning_rate=.01, num_iterations=1000):
+def train(x_data, y_labels, num_classes, learning_rate=.01,
+  num_iterations=1000, batch_size = 128):
   softmax = OneLayerNet(num_classes)
   softmax.train(x_data, y_labels, learning_rate=learning_rate,
-                num_iterations=num_iterations)
+                num_iterations=num_iterations, batch_size=batch_size)
 
   predictions = softmax.predict(x_data).astype(int)
   results = (predictions == y_labels)
@@ -124,12 +126,19 @@ def main():
   #print ""
 
   # test 3: MNIST dataset
-  print "Test 3: MNIST Dataset"
-  mnist_train, mnist_labels, mnist_test, mnist_test_labels = lm.load_mnist()
+  #print "Test 3: MNIST Dataset"
+  #mnist_train, mnist_labels, mnist_test, mnist_test_labels = lm.load_mnist()
+  #print "Training..."
+  #classifier = train(mnist_train, mnist_labels, 10, learning_rate = .001,
+  #            num_iterations=50)
+  #test(classifier, mnist_test, mnist_test_labels)
+
+  print "Test: CIFAR10 Dataset"
+  cifar_train, cifar_labels, cifar_test, cifar_test_labels = c10.load_cifar10()
   print "Training..."
-  classifier = train(mnist_train, mnist_labels, 10, learning_rate = .01,
-              num_iterations=50)
-  test(classifier, mnist_test, mnist_test_labels)
+  classifier = train(cifar_train, cifar_labels, 10, learning_rate = .001,
+  num_iterations = 50)
+  test(classifier, cifar_test, cifar_test_labels)
 
 if __name__ == "__main__":
   main()
