@@ -22,13 +22,13 @@ There are three steps to updating parameters in this arbitrary-layer network:
 
 Let us go into each of these steps in more detail.
 
-\subsubsection{Forward Propagation}
+\subsection{Forward Propagation}
 For any layer $j$ in the network, we transform an input, denoted $Z^{(j-1)}$,
 of size $m \times t_{(j-1)}$ to an output, denoted $Z^{(j)}$, of size $m \times
 t_j$. This is done through the following steps:
 
 $$ A^{(j)} = Z^{(j-1)} W^{(j)} + b^{(j)}, $$
-$$ Z^{(j)} = \phi ( A^{(j)} )$$.
+$$ Z^{(j)} = \phi ( A^{(j)} ).$$
 
 For the input layer, $Z^{(0)} = X$, since our training data must be the input
 for the first layer of the network. In the output layer, the data will not be
@@ -36,14 +36,14 @@ propagated through $\phi$ as with the other hidden layers; instead we have
 $$ P = Z^{(h)} W^{(h+1)} + b^{(h+1)}. $$
 
 
-\subsubsection{Backward Propagation}
+\subsection{Backward Propagation}
 We can define matricies $\nabla W^{(j)}$ and $\nabla b^{(j)}$ exactly as
 before. The output layer of the neural network is identical to a softmax
 classifier, so the formulas for $\nabla P$, $\nabla W^{(h+1)}$, and $\nabla
 b^{(h+1)}$ will be identical to the ones in Chapter 4.
 Then, the matrix $\nabla Z^{(h)}$ will be back-propagated to the previous
 layer. Let us suppress the indices for simplicity. For each hidden layer, we
-recieve an input $Z_{in}$ and have parameters $W$ and $b$. We compute $A$ by
+receive an input $Z_{in}$ and have parameters $W$ and $b$. We compute $A$ by
 
 $$ A = Z_{in} W + b, $$
 
@@ -56,20 +56,22 @@ the subsequent layer. We then compute
 
 $$ \nabla A = \nabla Z_{out} \bullet (A > 0), $$
 
-as we did for the one-layer network. Recall that $a \bullet b$ symbolizes
-element-by-element multiplication of two matricies $a$ and $b$.  Just as in the
+as we did for the one-layer network. Recall that $C \bullet D$ symbolizes
+element-by-element multiplication of two matricies $C$ and $D$.  Just as in the
 case for a single-layer network, we have
 
 $$ \nabla W = Z_{in} \nabla A, $$
 $$ \nabla b = \sum_{i=1}^m \nabla A_i. $$
+
+\noindent Recall that this notation means that $\nabla b$ is a vector containing the column-wise sums of $A$.
 
 If we are not at the input layer, we would then backpropagate $\nabla Z_{out}$
 to the previous layer, where $\nabla Z_{out}$ is defined as
 
 $$ \nabla Z_{out} = \nabla A W. $$
 
-\subsubsection{Update Parameters}
-As before, we update our parameters with the following equations:
+\subsection{Update Parameters}
+As before, we update our parameters using the following equations:
 
 \begin{align*}
 W^{(j)} &= W^{(j)} - \eta \nabla W^{(j)},\\
@@ -77,5 +79,3 @@ b^{(j)} &= b^{(j)} - \eta \nabla b^{(j)}
 \end{align*}
 
 for each layer $j$ in the network.
-
-% MAYBE DO AN EXAMPLE: LOOK AT STANFORD COURSE

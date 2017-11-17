@@ -2,7 +2,7 @@
 \section{Introduction}
 
 The goal of image classification is to determine the main contents of an image,
-commonly referred to as the image's \textit{class}.This is a more complex
+commonly referred to as the image's \textit{class}. This is a more complex
 problem than one may think when first studying it due to the variation in
 images. While there are many algorithms that attempt to classify images, neural
 networks are known to be most successful in doing so.
@@ -14,12 +14,11 @@ detail later on in this paper, but they all describe ways in which images of
 the same class can vary. For this reason, a complex algorithm is required to
 classify images.
 
-Neural networks pose a solution to the problem of image classification because
-they are loosely motivated by the way a human brain learns. They use
-image classification using a data-driven approach by processing many
+Neural networks classify images using a data-driven approach by processing many
 examples from different classes of images. They have neurons, or units, that
 learn the features of a dataset. Those units then propagate information to
-other units. This process allows the algorithm to learn from observational data.
+other units. This process allows the algorithm to learn from observational
+data.
 
 Neural networks have two phases; training and inference. In the training phase,
 they learn from a large dataset, and in inference, they apply that knowledge to
@@ -27,17 +26,16 @@ new testing data that hasn't been seen before. There's a rich mathematical
 theory involved in designing a neural network, which will be described in
 detail in Chapter \ref{ch:gradient_descent}.
 
-% maybe it's extra, but I feel like it's important to mention?
-Despite advances in hardware that have now made it feasable to use neural
-networks, they are still extremely computationally expensive to train,
-sometimes taking weeks or months to do so. Current research is being conducted
-in order to find ways to speed up neural networks by innovative technical
-companies, such as Google, Facebook, and AMD. While it is not the focus of this
-paper to discuss this topic, it's important to realize that new techniques are
-still being developed as this is a growing field.
+Despite advances in hardware that have made it feasable to use neural networks,
+they are still extremely computationally expensive to train, sometimes taking
+weeks or months to do so. Current research is being conducted in order to find
+ways to speed up neural networks by innovative technical companies, such as
+Google, Facebook, and AMD. While it is not the focus of this paper to discuss
+this topic, it's important to realize that new techniques are still being
+developed as this is a growing field.
 
 In Sections \ref{ch:image_classification} and \ref{ch:neural_networks}, we will
 discuss background for image classification and neural networks. In Section
 \ref{ch:gradient_descent}, gradient descent, the iterative algorithm that
-trains a neural network. will be discussed. In Section \ref{ch:python}, we will
+trains a neural network will be discussed. In Section \ref{ch:python}, we will
 discuss the implementation of a fully-connected network in Python.

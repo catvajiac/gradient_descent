@@ -1,7 +1,6 @@
 \newpage
 \section{Classifying Non-Linear Data}
 The Softmax Classifier is good at classifying linearly separable data.
-(\textbf{TODO}: explain and give example)
 However, many classification problems involve data that isn't linearly
 separable. In order to classify nonlinear data, we must add a nonlinearity to
 our neural network architecture. There are many different ways in which this
@@ -19,10 +18,10 @@ By propagating our data through RELU on top of the softmax classifier, we will
 create a one-layer neural network, which has the following different
 parameters:
 \begin{enumerate}
-\item parameters $W^{(1)}$ and $B^{(1)}$
-\item parameters $W^{(2)}$ and $B^{(2)}$ \item a non-linear function (the
-$relu$ function in our case), denoted $\phi$, which maps $\mathbb{R}^N
-\longrightarrow \mathbb{R}^N$.
+\item parameters $W^{(1)}$ and $b^{(1)}$
+\item parameters $W^{(2)}$ and $b^{(2)}$ \item a non-linear function (the
+$relu$ function in our case), denoted $\phi$, which maps $\mathbb{R}
+\longrightarrow \mathbb{R}$.
 \end{enumerate}
 
 Our neural network now has more parameters, and so the prediction step is a
@@ -31,10 +30,10 @@ process:
 \begin{enumerate}
 \item $A = XW^{(1)} + b^{(1)}$,
 \item $Z = \phi(A)$,
-\item $P + ZW^{(2)} + b^{(2)}$.
+\item $P = ZW^{(2)} + b^{(2)}$.
 \end{enumerate}
 
-Once again, we must use a loss function to optimize our parameters. Let us use
+Once again, we must use a loss function to optimize our parameters. We will use
 the Softmax Loss function as we did before. (Note: current research shows that
 other loss functions produce better results, but those functions tend to be
 more complicated and are more computationally expensive to train. Everything is
@@ -42,42 +41,23 @@ a tradeoff).
 
 We will need $\phi'$ to calculate our update formulas, but we note that
 $\phi$ is not differentable at $x=0$. In place of $\phi'(x)$, we will use
-$1(x == 0)$. (Note: why can we do this)
+$1(x > 0)$, where $1(C > D)$ evaluates to 1 if $C > D$ and 0 otherwise.
 
-\subsubsection{Deriving $\nabla W^{(2)}$ and $\nabla b^{(2)}$}
+\subsection{Deriving $\nabla W^{(2)}$ and $\nabla b^{(2)}$}
 Since the output layer, or last layer of our new architecture is identical to a
-Softmax classifier, just with $Z$ in place of $X$, we define $\nabla
-W^{(2)}$ and $\nabla b^{(2)}$ as
+Softmax classifier, just with $Z$ in place of $X$, we compute $\nabla
+W^{(2)}$ and $\nabla b^{(2)}$ to be
 
 $$ \nabla W^{(2)}  = Z^T P, $$
 $$ \nabla b^{(2)}  = \sum_{i=1}^m P_i. $$
 
-\subsubsection{Deriving $\nabla X$}
-\begin{align*}
-  \frac{\partial L}{\partial X_{uv}}
-  =\sum_{i=1}^m \frac{\partial L_i}{X_{uv}}\\
-  &= \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{ij}}
-      \frac{\partial P_{ij}}{\partial X_{uv}}\\
-  &= \sum_{i=1}^m \sum_{j=1}^k \frac{\partial L_i}{\partial P_{ij}}
-      1(i == u) W_{vj}\\
-  &= \sum_{j=1}^k \sum_{i=1}^m \frac{\partial L_i}{\partial P_{ij}}
-      1(i == u) W_{vj}\\
-  &= \sum_{j=1}^k \frac{\partial L_u}{\partial P_{uj}} W_{vj}\\
-  &= \sum_{j=1}^k \nabla P_{uj} W_{vj}\\
-  &= \left( \nabla P W^T \right) _{uv}.
-\end{align*}
-
-Defining $\nabla X_{ij} = \frac{\partial L}{\partial X_{ij}}$, we now have
-
-$$ \nabla X = \nabla P W^T. $$
-
 % rewrite, X can be replaced iwth Z?
-Deriving $\nabla Z$ would be done in exactly the same way. If we define
-$\nabla Z_{uv} = \frac{\partial L}{\partial Z_{uv}}$, we now have
+Deriving $\nabla Z$ would be done in exactly the same way as $\nabla X$. If
+we define $\nabla Z_{uv} = \frac{\partial L}{\partial Z_{uv}}$, we now have
 
 $$ \nabla Z = \nabla P W^{(2)}. $$
 
-\subsubsection{Deriving $\nabla A$, $\nabla W^{(1)}$, $\nabla b^{(1)}$}
+\subsection{Deriving $\nabla A$, $\nabla W^{(1)}$, $\nabla b^{(1)}$}
 Recall that $Z = \phi(A).$
 
 In order to calculate $\nabla W^{(1)}$ and $\nabla b^{(1)}$, we will first
@@ -100,13 +80,15 @@ $$ \nabla A = \nabla Z \bullet (A > 0), $$
 
 where $a \bullet b$ indicates the element-wise multiplication of matricies $a$ and $b$.
 
-We can define matricies $W^{(1)}$ and $b^{(1)}$ as we did with $W^{(2)}$ and
+We can define matricies $\nabla W^{(1)}$ and $\nabla b^{(1)}$ as we did with $W^{(2)}$ and
 $W^{(2)}$ earlier. Since these matricies have the same relationship with $A$ as
 $W$ and $b$ did with $P$ in the softmax classifier, we get
 $$ \nabla W^{(1)} = X \nabla A, $$
-$$ \nabla b^{(1)} = \sum_{i=1}^m \nabla A_i.$$
+$$ \nabla b^{(1)} = \sum_{i=1}^m \nabla A_i,$$
 
-\subsubsection{Update formulas}
+so $\nabla b$ is a vector containing the column-wise sums of $A$. 
+
+\subsection{Update formulas}
 Now that we have calculated the gradients for all of our parameters, we can
 define their update formulas as follows:
 
